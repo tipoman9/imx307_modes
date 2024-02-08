@@ -105,6 +105,9 @@ extern int imx307_2l_read_register(VI_PIPE ViPipe, int addr);
 	(1) /* make real fps less than stand fps because NVR require */
 
 #define IMX307_VMAX_1080P30_LINEAR (1125 + IMX307_INCREASE_LINES)
+
+#define IMX307_VMAX_720P30_LINEAR (0x2EE + IMX307_INCREASE_LINES)
+
 #define IMX307_VMAX_1080P60TO30_WDR (1125 + IMX307_INCREASE_LINES) // 10bit
 
 // sensor fps mode
@@ -255,7 +258,7 @@ static GK_VOID cmos_fps_set(VI_PIPE ViPipe, GK_FLOAT f32Fps,
 
 	switch (pstSnsState->u8ImgMode) {
 	case IMX307_SENSOR_1080P_30FPS_2t1_WDR_MODE:
-		if ((f32Fps <= 30) && (f32Fps >= 15.22)) {
+		if ((f32Fps <= 60) && (f32Fps >= 15.22)) {
 			u32VMAX = IMX307_VMAX_1080P60TO30_WDR * 30 /
 				  DIV_0_TO_1_FLOAT(f32Fps);
 		} else {
@@ -271,8 +274,8 @@ static GK_VOID cmos_fps_set(VI_PIPE ViPipe, GK_FLOAT f32Fps,
 		break;
 
 	case IMX307_SENSOR_1080P_30FPS_LINEAR_MODE:
-		if ((f32Fps <= 30) && (f32Fps >= 0.12)) {
-			u32VMAX = IMX307_VMAX_1080P30_LINEAR * 30 /
+		if ((f32Fps <= 60) && (f32Fps >= 0.12)) {
+			u32VMAX =  IMX307_VMAX_720P30_LINEAR /*IMX307_VMAX_1080P30_LINEAR*/ * 30 /
 				  DIV_0_TO_1_FLOAT(f32Fps);
 		} else {
 			ISP_TRACE(MODULE_DBG_ERR, "Not support Fps: %f\n",
