@@ -160,6 +160,7 @@ void imx307_2l_restart(VI_PIPE ViPipe)
 void imx307_2l_wdr_1080p30_2to1_init(VI_PIPE ViPipe);
 void imx307_2l_linear_1080p30_init(VI_PIPE ViPipe);
 void imx307_2l_Full_720p30_init(VI_PIPE ViPipe);
+void imx307_2l_Full_720p60_init(VI_PIPE ViPipe);
 
 void imx307_2l_default_reg_init(VI_PIPE ViPipe)
 {
@@ -198,7 +199,7 @@ void imx307_2l_init(VI_PIPE ViPipe)
 		}
 	} else {
 		//imx307_2l_linear_1080p30_init(ViPipe);
-		imx307_2l_Full_720p30_init(ViPipe);
+		imx307_2l_Full_720p60_init(ViPipe);
 	}
 	g_pastImx307_2l[ViPipe]->bInit = GK_TRUE;
 	return;
@@ -212,7 +213,6 @@ void imx307_2l_exit(VI_PIPE ViPipe)
 }
 
 
-/* Custom for tests */
 void imx307_2l_Full_720p30_init(VI_PIPE ViPipe)
 {
 	// Enter Standby
@@ -312,7 +312,113 @@ void imx307_2l_Full_720p30_init(VI_PIPE ViPipe)
 	imx307_2l_write_register(ViPipe, 0x3000, 0x00); // standby
 
 	printf("==============================================================\n");
-	printf("=====Sony IMX307_2l sensor test FullHD 720p fps(MIPI) init success!=====\n");
+	printf("=====Sony IMX307_2l sensor test FullHD 720p 30fps(MIPI) init success!=====\n");
+	printf("==============================================================\n");
+	return;
+}
+
+
+/* Custom for tests */
+void imx307_2l_Full_720p60_init(VI_PIPE ViPipe)
+{
+	// Enter Standby
+	imx307_2l_write_register(ViPipe, 0x3000, 0x01); // Standby mode
+	imx307_2l_write_register(ViPipe, 0x3002, 0x00); // XMSTA
+	imx307_2l_write_register(ViPipe, 0x3005, 0x00); // ADBIT 0 = 10bit, 1=12bit
+	//imx307_2l_write_register(ViPipe, 0x3007, 0x00); // VREVERSE & HREVERSE & WINMODE
+
+	//720p HD mode 
+	imx307_2l_write_register(ViPipe, 0x3007, 0x10); // VREVERSE & HREVERSE & WINMODE  b00010000
+
+	imx307_2l_write_register(ViPipe, 0x3009, 0x02); // FRSEL & FDG_SEL 0x02 30fps, 0x01 = 60fps
+	imx307_2l_write_register(ViPipe, 0x300A, 0x3C); // BLKLEVEL
+	imx307_2l_write_register(ViPipe, 0x3011, 0x0A);
+	imx307_2l_write_register(ViPipe, 0x3018, 0xEE); // VMAX 2EEh
+	imx307_2l_write_register(ViPipe, 0x3019, 0x02); // VMAX 2EEEh
+	imx307_2l_write_register(ViPipe, 0x301C, 0xC8); // HMAX; 0x1130-30fps  ; 0x0898 - 60fps ;  0x19C8=30fps
+	imx307_2l_write_register(ViPipe, 0x301D, 0x19); //  0CE4h: 60[frame/s] / 0F78h: 50[frame/s]
+	imx307_2l_write_register(ViPipe, 0x3044, 0x00); //  ODBIT 10bit
+	imx307_2l_write_register(ViPipe, 0x3046, 0x00); // ODBIT & OPORTSEL
+	imx307_2l_write_register(ViPipe, 0x304B, 0x0A); // XVSOUTSEL & XHSOUTSEL
+	imx307_2l_write_register(ViPipe, 0x305C, 0x20); // INCKSEL1 37.125MHz
+	imx307_2l_write_register(ViPipe, 0x305D, 0x00); // INCKSEL2
+	imx307_2l_write_register(ViPipe, 0x305E, 0x20); //INCKSEL3
+	imx307_2l_write_register(ViPipe, 0x305F, 0x01);  //INCKSEL4
+	imx307_2l_write_register(ViPipe, 0x309E, 0x4A);  //Set to "4Ah
+	imx307_2l_write_register(ViPipe, 0x309F, 0x4A);  //Set to "4Ah
+
+	imx307_2l_write_register(ViPipe, 0x311C, 0x0E); //Set to "0Eh"
+	imx307_2l_write_register(ViPipe, 0x3128, 0x04);  //set to
+	imx307_2l_write_register(ViPipe, 0x3129, 0x1D); // ADBIT1 10 bit: 1Dh
+	imx307_2l_write_register(ViPipe, 0x313B, 0x41);  // set to
+	imx307_2l_write_register(ViPipe, 0x315E, 0x1A); // INCKSEL5 37.125MHz INCK5 Setting
+	imx307_2l_write_register(ViPipe, 0x3164, 0x1A); // INCKSEL6 37.125MHz
+	imx307_2l_write_register(ViPipe, 0x317C, 0x12); // ADBIT2 10 bit: 12h
+	imx307_2l_write_register(ViPipe, 0x31EC, 0x37); // ADBIT3 10 bit: 37h
+
+	imx307_2l_write_register(ViPipe, 0x3405, 0x10); // REPETITION 0x00 for 60fps
+	imx307_2l_write_register(ViPipe, 0x3407, 0x01); // PHYSICAL_LANE_NUM 1h = 2 lanes
+	imx307_2l_write_register(ViPipe, 0x3414, 0x04); // OPB_SIZE_V
+	imx307_2l_write_register(ViPipe, 0x3418, 0xD9); // Y_OUT_SIZE
+	imx307_2l_write_register(ViPipe, 0x3419, 0x02); // Y_OUT_SIZE
+	imx307_2l_write_register(ViPipe, 0x3441, 0x0A); // CSI_DT_FMT //0A0Ah: RAW10
+	imx307_2l_write_register(ViPipe, 0x3442, 0x0A); // CSI_DT_FMT
+	imx307_2l_write_register(ViPipe, 0x3443, 0x01); // CSI_LANE_MODE
+	imx307_2l_write_register(ViPipe, 0x3444, 0x20); // EXTCK_FREQ
+	imx307_2l_write_register(ViPipe, 0x3445, 0x25); // EXTCK_FREQ
+
+/* 60fps */
+/*
+    imx307_2l_write_register(ViPipe, 0x3446, 0x77); // TCLKPOST
+	imx307_2l_write_register(ViPipe, 0x3447, 0x00);
+	imx307_2l_write_register(ViPipe, 0x3448, 0x67); // THSZERO
+	imx307_2l_write_register(ViPipe, 0x3449, 0x00);
+	imx307_2l_write_register(ViPipe, 0x344A, 0x47); // THSPREPARE
+	imx307_2l_write_register(ViPipe, 0x344B, 0x00);
+	imx307_2l_write_register(ViPipe, 0x344C, 0x37); // TCLKTRAIL
+	imx307_2l_write_register(ViPipe, 0x344D, 0x00);
+	imx307_2l_write_register(ViPipe, 0x344E, 0x3F); // THSTRAIL
+	imx307_2l_write_register(ViPipe, 0x344F, 0x00);
+	imx307_2l_write_register(ViPipe, 0x3450, 0xFF); // TCLKZERO
+	imx307_2l_write_register(ViPipe, 0x3451, 0x00);
+	imx307_2l_write_register(ViPipe, 0x3452, 0x3F); // TCLKPREPARE
+	imx307_2l_write_register(ViPipe, 0x3453, 0x00);
+	imx307_2l_write_register(ViPipe, 0x3454, 0x37); // TLPX
+	imx307_2l_write_register(ViPipe, 0x3455, 0x00);
+	imx307_2l_write_register(ViPipe, 0x3472, 0x1C); // X_OUT_SIZE
+	imx307_2l_write_register(ViPipe, 0x3473, 0x05); // X_OUT_SIZE
+	imx307_2l_write_register(ViPipe, 0x3480, 0x49); // INCKSEL7
+*/
+
+	/* 30FPS settings */
+	imx307_2l_write_register(ViPipe, 0x3446, 0x4F); // TCLKPOST
+	imx307_2l_write_register(ViPipe, 0x3447, 0x00);
+	imx307_2l_write_register(ViPipe, 0x3448, 0x2F); // THSZERO
+	imx307_2l_write_register(ViPipe, 0x3449, 0x00);
+	imx307_2l_write_register(ViPipe, 0x344A, 0x17); // THSPREPARE
+	imx307_2l_write_register(ViPipe, 0x344B, 0x00);
+	imx307_2l_write_register(ViPipe, 0x344C, 0x17); // TCLKTRAIL
+	imx307_2l_write_register(ViPipe, 0x344D, 0x00);
+	imx307_2l_write_register(ViPipe, 0x344E, 0x17); // THSTRAIL
+	imx307_2l_write_register(ViPipe, 0x344F, 0x00);
+	imx307_2l_write_register(ViPipe, 0x3450, 0x57); // TCLKZERO
+	imx307_2l_write_register(ViPipe, 0x3451, 0x00);
+	imx307_2l_write_register(ViPipe, 0x3452, 0x17); // TCLKPREPARE
+	imx307_2l_write_register(ViPipe, 0x3453, 0x00);
+	imx307_2l_write_register(ViPipe, 0x3454, 0x17); // TLPX
+	imx307_2l_write_register(ViPipe, 0x3455, 0x00);
+	imx307_2l_write_register(ViPipe, 0x3472, 0x1C); // X_OUT_SIZE
+	imx307_2l_write_register(ViPipe, 0x3473, 0x05); // X_OUT_SIZE
+	imx307_2l_write_register(ViPipe, 0x3480, 0x49); // INCKSEL7
+	
+
+	imx307_2l_default_reg_init(ViPipe);
+
+	// Standby Cancel
+	imx307_2l_write_register(ViPipe, 0x3000, 0x00); // standby
+
+	printf("==============================================================\n");
+	printf("=====Sony IMX307_2l sensor FullHD 720p 60 fps(MIPI) init success!=====\n");
 	printf("==============================================================\n");
 	return;
 }
